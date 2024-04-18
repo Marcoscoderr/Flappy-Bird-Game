@@ -20,7 +20,7 @@ pygame.font.init()
 FONTE_PONTOS = pygame.font.SysFont('arial, 50')
 
 
-class passaro():
+class Passaro():
     #Constante imagens do passaro
     IMGS = IMAGEM_PASSARO
 
@@ -114,7 +114,7 @@ class passaro():
             pygame.mask.from_surface(self.imagem)
 
 
-class cano():
+class Cano():
     #Distancia entre os canos de base e topo (onde o passaro passa)
     DISTANCIA = 200
     VELOCIDADE = 5
@@ -157,14 +157,15 @@ class cano():
 
         topo_ponto = passaro_mask.overlap(topo_mask, distancia_topo)
         base_ponto = passaro_mask.overlap(topo_mask, distancia_base)
-                                          
+
+         #Se houve colisão de mascaras, retorna TRUE                                 
         if base_ponto or topo_ponto:
             return True
         else:
             return False
             
 
-class chao():
+class Chao():
     VELOCIDADE = 0
     LARGURA = IMAGEM_CHAO.get_width()
     IMAGEM = IMAGEM_CHAO
@@ -174,6 +175,7 @@ class chao():
         self.x1 = 0
         self.x2 = self.LARGURA
 
+    #São criadas duas imagens do chão que alternam na tela
     def mover(self):
         self.x1 -= self.VELOCIDADE
         self.x2 -= self.VELOCIDADE
@@ -184,9 +186,54 @@ class chao():
         if self.x2 + self.LARGURA < 0:
             self.x2 = self.x2 + self.LARGURA
 
+    #Desenhando o chão na tela
     def desenhar(self, tela):
         tela.blit(self.IMAGEM, (self.x1, self.y))
         tela.blit(self.IMAGEM, (self.x2, self.y))
 
-def desenhar_tela(self, telas, passaros, cano, chao, pontuacaao):
+def desenhar_tela(self, tela, passaros, canos, chao, pontos):
+    tela.blit(IMAGEM_FUNDO, (0,0))
+    for passaro in passaros:
+        passaro.desenhar(tela)
+    for cano in canos:
+        cano.desenhar(tela)
+
+    #Criando o texto para colocar na tela
+    TEXTO = FONTE_PONTOS.render(f"Pontuação: {pontos}", 1, (255,255,255))
+    tela.blit(TEXTO, (LARGURA_TELA - 10 - TEXTO.get_widht(), 10))
+    
+    chao.desenhar(tela)
+    pygame.display.update()
+
+def main():
+    passaros = [Passaro(230, 350)]
+    chao = Chao(730)
+    canos = Cano(700)
+    tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
+    pontos = 0
+    relogio = pygame.time.Clock()
+
+    #Fazer o jogo rodar
+    rodando = True
+    while rodando:
+        relogio.tick(30)
+
+        #intergir com o jogo
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                rodando = False
+                pygame.quit()
+                quit()
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_SPACE:
+                    for passaro in passaros:
+                        passaro.pular()
+
+
+
+
+def desenhar_tela(tela, passaros, canos, chao, pontos):
     pass
+
+
+
