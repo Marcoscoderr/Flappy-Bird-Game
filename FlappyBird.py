@@ -188,4 +188,5 @@ class chao():
         tela.blit(self.IMAGEM, (self.x1, self.y))
         tela.blit(self.IMAGEM, (self.x2, self.y))
 
-    
+def desenhar_tela(self, telas, passaros, cano, chao, pontuacaao):
+    pass
