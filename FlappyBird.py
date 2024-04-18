@@ -115,7 +115,77 @@ class passaro():
 
 
 class cano():
-    pass
+    #Distancia entre os canos de base e topo (onde o passaro passa)
+    DISTANCIA = 200
+    VELOCIDADE = 5
+
+    def __init__(self, x) -> None:
+        self.x = x
+        self.altura = 0
+        #posicao de acordo com o exio Y
+        self.posicao_topo = 0
+        self.posicao_base = 0 
+        self.CANO_TOPO = pygame.transform.flip(IMAGEM_CANO, False, True)
+        self.CANO_BASE = IMAGEM_CANO
+        #para saber se o cano já passou do passaro
+        self.passou = False
+        #Função que irá gerar a altura do cano aleatoriamente
+        self.definir_altura()
+
+    def definir_altura(self):
+        self.altura = random.randrange(50, 450)
+        self.posicao_base = self.altura - self.CANO_TOPO.get_height()
+        self.posicao_base = self.altura + self.DISTANCIA
+
+    #Movimento do cano na tela
+    def mover(self):
+        self.x -= self.VELOCIDADE
+
+    def desenhar(self, tela):
+        tela.blit(self.CANO_TOPO, (self.x, self.pos_topo))
+        tela.blit(self.CANO_BASEW, (self.x, self.pos_base))
+
+        
+    def colidir(self, passaro):
+        #mascaras do passaro e dos canos para controle de colisao
+        passaro_mask = passaro.get_mask()
+        topo_mask = pygame.mask.from_surface(self.CANO_TOPO)
+        base_mask = pygame.mask.from_surface(self.CANO_BASE)
+
+        distancia_topo = (self.x - passaro.x, self.posicao_topo - round(passaro.y))
+        distancia_base = (self.x - passaro.x, self.posicao_base - round(passaro.y))
+
+        topo_ponto = passaro_mask.overlap(topo_mask, distancia_topo)
+        base_ponto = passaro_mask.overlap(topo_mask, distancia_base)
+                                          
+        if base_ponto or topo_ponto:
+            return True
+        else:
+            return False
+            
 
 class chao():
-    pass
+    VELOCIDADE = 0
+    LARGURA = IMAGEM_CHAO.get_width()
+    IMAGEM = IMAGEM_CHAO
+
+    def __init__(self, y) -> None:
+        self.y = y
+        self.x1 = 0
+        self.x2 = self.LARGURA
+
+    def mover(self):
+        self.x1 -= self.VELOCIDADE
+        self.x2 -= self.VELOCIDADE
+
+        if self.x1 + self.LARGURA < 0:
+            self.x1 = self.x1 + self.LARGURA
+
+        if self.x2 + self.LARGURA < 0:
+            self.x2 = self.x2 + self.LARGURA
+
+    def desenhar(self, tela):
+        tela.blit(self.IMAGEM, (self.x1, self.y))
+        tela.blit(self.IMAGEM, (self.x2, self.y))
+
+    
